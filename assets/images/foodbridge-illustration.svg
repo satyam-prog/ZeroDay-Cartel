@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" fill="none">
+  <rect x="36" y="24" width="568" height="472" rx="36" fill="#E8F0D9"/>
+  <circle cx="488" cy="114" r="52" fill="#F4C95D"/>
+  <path d="M66 386c70-74 155-108 255-102 99 6 169 39 253 106v70H66v-74Z" fill="#C5DDAE"/>
+  <path d="M62 418c78-54 157-74 244-58 88 16 179 56 269 54v78H62v-74Z" fill="#8DBB7C"/>
+  <path d="M110 358h153l-18 83H127l-17-83Z" fill="#A45732"/>
+  <path d="M102 351c10-20 27-32 48-36 19-4 34 3 48 14 13-21 34-28 55-16 12 7 19 20 22 38H102Z" fill="#6F9D48"/>
+  <path d="M150 322c-10-24-5-45 12-61 20 20 25 41 12 64" fill="#4F813A"/>
+  <path d="M191 320c-2-26 10-43 35-51 9 25 3 46-18 61" fill="#70A549"/>
+  <path d="M105 353h166v18H105z" fill="#D98749"/>
+  <path d="M330 242c0-20 16-36 36-36h130c20 0 36 16 36 36v132H330V242Z" fill="#FFFDF6"/>
+  <path d="M353 259c0-14 11-25 25-25h106c14 0 25 11 25 25v75H353v-75Z" fill="#E9B64B"/>
+  <path d="M368 287c26-20 54-22 81-5 17 10 34 12 54 3v24c-25 12-48 10-70-3-21-13-41-12-65 5v-24Z" fill="#F7D980"/>
+  <path d="M329 374h204v18H329z" fill="#526A43"/>
+  <path d="M349 392v49m164-49v49" stroke="#526A43" stroke-width="12" stroke-linecap="round"/>
+  <path d="M269 202c20-27 49-41 87-41h53" stroke="#526A43" stroke-width="6" stroke-linecap="round" stroke-dasharray="4 14"/>
+  <path d="m395 146 20 15-20 15" stroke="#526A43" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="169" cy="193" r="59" fill="#F7F1DC"/>
+  <path d="M136 206c7-31 22-48 46-52 10 22 8 42-7 59-11 13-25 16-39 9v-16Z" fill="#72A64E"/>
+  <path d="M154 215c16-16 29-34 39-55" stroke="#426E39" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="464" cy="108" r="6" fill="#526A43"/>
+  <path d="M456 121c6 7 13 7 19 0" stroke="#526A43" stroke-width="4" stroke-linecap="round"/>
+  <path d="M292 118c9-16 20-25 34-27m-22 47c12-12 25-17 39-15" stroke="#9BBE7F" stroke-width="6" stroke-linecap="round"/>
+  <path d="M88 286c10-12 22-18 37-18m-18 35c10-10 22-15 35-14" stroke="#9BBE7F" stroke-width="6" stroke-linecap="round"/>
+</svg>

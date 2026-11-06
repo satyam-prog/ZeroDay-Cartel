@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operational Telemetry & Dispatch Portal - FoodBridge</title>
+  <meta name="description" content="FoodBridge institutional operations portal for chain-of-custody tracking, cold-chain temperature verification, and statutory tax receipts.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Vendored Local SVG Icons (Zero External CDN Dependency) -->
+  <script src="assets/js/icons.js"></script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
+
+  <!-- Header -->
+  <header class="border-b border-slate-200 bg-white sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded bg-emerald-800 text-white flex items-center justify-center font-bold text-sm">FB</span>
+          <span class="font-bold text-slate-900 text-lg tracking-tight">FoodBridge</span>
+        </a>
+        <span class="text-slate-300">|</span>
+        <span class="text-xs uppercase font-bold text-slate-500 tracking-wider">Operations & Dispatch Telemetry</span>
+      </div>
+      <div class="flex items-center gap-4 text-xs">
+        <span class="px-2 py-1 bg-slate-100 rounded text-slate-700 font-mono">Role: Compliance Auditor</span>
+        <a href="index.html" class="text-emerald-800 hover:underline font-semibold">Exit to Public Site</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Top Summary Banner -->
+    <div class="border-b border-slate-200 pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Active Consignment & Dispatch Registry</h1>
+        <p class="text-xs text-slate-500 mt-1">
+          Immutable chain-of-custody records pursuant to 42 U.S.C. &sect; 1791 and Internal Revenue Code &sect; 170(e)(3).
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="export-csv-btn" class="btn-secondary text-xs">
+          Export Audit Manifest (CSV)
+        </button>
+        <button data-open-modal="donation-modal" class="btn-primary text-xs">
+          Schedule New Consignment
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="bg-white border border-slate-200 rounded-md p-4 mb-6 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex flex-wrap items-center gap-2">
+        <label for="filter-status" class="font-bold uppercase text-slate-500">Filter Status:</label>
+        <select id="filter-status" class="border border-slate-300 rounded px-2.5 py-1 text-xs focus:outline-none focus:border-emerald-700">
+          <option value="all">All Dispatches (4)</option>
+          <option value="delivered">Delivered & Signed (2)</option>
+          <option value="in_transit">In Transit (1)</option>
+          <option value="manifested">Manifested (1)</option>
+        </select>
+
+        <label for="search-facility" class="font-bold uppercase text-slate-500 ml-2">Search:</label>
+        <input 
+          id="search-facility" 
+          type="text" 
+          placeholder="Filter by facility or manifest..." 
+          class="border border-slate-300 rounded px-2.5 py-1 text-xs w-48 focus:outline-none focus:border-emerald-700"
+        />
+      </div>
+
+      <div class="text-slate-400 font-medium">
+        Showing 4 verified operational lots
+      </div>
+    </div>
+
+    <!-- Dispatches Table -->
+    <div class="border border-slate-200 rounded-md bg-white overflow-hidden shadow-xs">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-600">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
+            <tr>
+              <th scope="col" class="py-3 px-4">Manifest ID</th>
+              <th scope="col" class="py-3 px-4">Donor Facility</th>
+              <th scope="col" class="py-3 px-4">Recipient Agency</th>
+              <th scope="col" class="py-3 px-4">Gross Weight</th>
+              <th scope="col" class="py-3 px-4">Holding Temp</th>
+              <th scope="col" class="py-3 px-4">Status</th>
+              <th scope="col" class="py-3 px-4">Tax Receipt #</th>
+              <th scope="col" class="py-3 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="dispatch-table-body" class="divide-y divide-slate-200">
+            <!-- Row 1 -->
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-3.5 px-4 font-mono font-bold text-slate-900">FB-DSP-2849</td>
+              <td class="py-3.5 px-4">
+                <strong class="text-slate-800 block">Grand Azure Main Kitchen</strong>
+                <span class="text-[10px] text-slate-400">450 Lexington Ave, NY</span>
+              </td>
+              <td class="py-3.5 px-4">
+                <strong class="text-slate-800 block">St. Jude Emergency Kitchen</strong>
+                <span class="text-[10px] text-slate-400">501(c)(3) Verified</span>
+              </td>
+              <td class="py-3.5 px-4 font-mono font-medium">119.80 lbs</td>
+              <td class="py-3.5 px-4">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+                  141.2&deg;F (Compliant)
+                </span>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800">
+                  Delivered & Signed
+                </span>
+              </td>
+              <td class="py-3.5 px-4 font-mono text-[11px] text-slate-600">TAX-2026-FB-8942</td>
+              <td class="py-3.5 px-4 text-right">
+                <button class="view-manifest-btn text-emerald-800 hover:underline font-semibold" data-manifest="FB-DSP-2849">
+                  Inspect
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 2 -->
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-3.5 px-4 font-mono font-bold text-slate-900">FB-DSP-2850</td>
+              <td class="py-3.5 px-4">
+                <strong class="text-slate-800 block">Metro Center Catering</strong>
+                <span class="text-[10px] text-slate-400">655 West 34th St, NY</span>
+              </td>
+              <td class="py-3.5 px-4">
+                <strong class="text-slate-800 block">Hope Outreach Food Pantry</strong>
+                <span class="text-[10px] text-slate-400">501(c)(3) Verified</span>
+              </td>
+              <td class="py-3.5 px-4 font-mono font-medium">245.50 lbs</td>
+              <td class="py-3.5 px-4">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+                  38.5&deg;F (Compliant)
+                </span>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                  In Transit
+                </span>
+              </td>
+              <td class="py-3.5 px-4 font-mono text-[11px] text-slate-400">Pending Receipt</td>
+              <td class="py-3.5 px-4 text-right">
+                <button class="view-manifest-btn text-emerald-800 hover:underline font-semibold" data-manifest="FB-DSP-2850">
+                  Inspect
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-3.5 px-4 font-mono font-bold text-slate-900">FB-DSP-2851</td>
+              <td class="py-3.5 px-4">
+                <strong class="text-slate-800 block">Hudson Culinary Commissary</strong>
+                <span class="text-[10px] text-slate-400">520 West 28th St, NY</span>
+              </td>
+              <td class="py-3.5 px-4">
+                <strong class="text-slate-800 block">City Harvest Relief Unit</strong>
+                <span class="text-[10px] text-slate-400">501(c)(3) Verified</span>
+              </td>
+              <td class="py-3.5 px-4 font-mono font-medium">84.20 lbs</td>
+              <td class="py-3.5 px-4">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+                  144.0&deg;F (Compliant)
+                </span>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800">
+                  Delivered & Signed
+                </span>
+              </td>
+              <td class="py-3.5 px-4 font-mono text-[11px] text-slate-600">TAX-2026-FB-8943</td>
+              <td class="py-3.5 px-4 text-right">
+                <button class="view-manifest-btn text-emerald-800 hover:underline font-semibold" data-manifest="FB-DSP-2851">
+                  Inspect
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 4 -->
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-3.5 px-4 font-mono font-bold text-slate-900">FB-DSP-2852</td>
+              <td class="py-3.5 px-4">
+                <strong class="text-slate-800 block">Gotham Wholesale Bakers</strong>
+                <span class="text-[10px] text-slate-400">11th Ave Commissary, NY</span>
+              </td>
+              <td class="py-3.5 px-4">
+                <strong class="text-slate-800 block">St. Jude Emergency Kitchen</strong>
+                <span class="text-[10px] text-slate-400">501(c)(3) Verified</span>
+              </td>
+              <td class="py-3.5 px-4 font-mono font-medium">65.00 lbs</td>
+              <td class="py-3.5 px-4">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                  70.0&deg;F (Ambient Bakery)
+                </span>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                  Driver Assigned
+                </span>
+              </td>
+              <td class="py-3.5 px-4 font-mono text-[11px] text-slate-400">Pending Delivery</td>
+              <td class="py-3.5 px-4 text-right">
+                <button class="view-manifest-btn text-emerald-800 hover:underline font-semibold" data-manifest="FB-DSP-2852">
+                  Inspect
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="border-t border-slate-200 bg-white py-6 text-xs text-slate-500 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>&copy; 2026 FoodBridge Foundation. Internal Operations Portal.</p>
+      <div class="flex gap-4">
+        <a href="privacy.html" class="hover:text-slate-800">Privacy Policy</a>
+        <a href="terms.html" class="hover:text-slate-800">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
+

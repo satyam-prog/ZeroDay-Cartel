@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer deliveries | FoodBridge</title>
+  <meta name="description" content="View and claim open FoodBridge delivery tasks in Gurugram.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/css/tailwind.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/icons.js"></script>
+</head>
+<body class="bg-white text-slate-800 antialiased font-sans">
+  <div class="fb-announcement">FOODBRIDGE · GURUGRAM COMMUNITY FOOD NETWORK</div>
+  <header class="fb-app-header">
+    <a href="index.html" class="flex items-center gap-3" aria-label="FoodBridge home"><span class="fb-brand-mark" aria-hidden="true">F</span><strong class="text-xl font-bold tracking-tight text-slate-900">FoodBridge</strong></a>
+    <nav aria-label="Main navigation"><a href="share-food.html">Share food</a><a href="find-food.html">Find food</a><a href="volunteer.html" aria-current="page">Volunteer</a></nav>
+    <div id="desktop-account-nav" class="fb-account-nav"><a class="btn-secondary" href="login.html">Log in</a></div>
+  </header>
+  <main class="fb-app-main">
+    <a href="index.html" class="fb-app-back">&larr; Home</a>
+    <header class="fb-app-title">
+      <p class="fb-section-kicker">Volunteer workspace</p>
+      <h1>Help with a delivery</h1>
+      <p>Claim an accepted delivery task, then coordinate pickup and drop-off with the donor and community kitchen.</p>
+    </header>
+    <p id="page-status" class="fb-page-status" role="status">Checking your volunteer access...</p>
+    <section id="page-content" class="fb-app-grid fb-app-grid-one" hidden>
+      <section class="fb-app-card">
+        <div class="fb-card-heading"><div><h2>Open delivery tasks</h2><p class="fb-app-help">Pickup address and donor contact are revealed only after you claim a task.</p></div><button id="refresh-tasks" type="button" class="btn-secondary">Refresh</button></div>
+        <div id="task-list" class="fb-record-list"><p>Loading open tasks...</p></div>
+      </section>
+      <section class="fb-app-card">
+        <h2>Your claimed tasks</h2>
+        <div id="claimed-list" class="fb-record-list"><p>Loading your tasks...</p></div>
+      </section>
+    </section>
+  </main>
+  <footer class="fb-login-footer"><span>&copy; 2026 FoodBridge · Gurugram, Haryana</span><a href="privacy.html">Privacy notice</a></footer>
+  <script type="module" src="assets/js/account-nav.js"></script>
+  <script type="module" src="assets/js/volunteer.js"></script>
+</body>
+</html>

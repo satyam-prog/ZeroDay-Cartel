@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in | FoodBridge</title>
+  <meta name="description" content="Create a FoodBridge account or sign in to join the Gurugram food-sharing network.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/css/tailwind.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/icons.js"></script>
+</head>
+<body class="bg-white text-slate-800 antialiased font-sans fb-login-page">
+  <div class="fb-announcement">
+    FoodBridge · Gurugram food-sharing network
+  </div>
+
+  <header class="fb-login-header">
+    <a href="index.html" class="flex items-center gap-3" aria-label="FoodBridge home">
+      <span class="fb-brand-mark" aria-hidden="true">F</span>
+      <span>
+        <strong class="text-xl font-bold tracking-tight text-slate-900 block leading-tight">FoodBridge</strong>
+        <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Good food, shared</span>
+      </span>
+    </a>
+    <a class="fb-login-back" href="index.html">&larr; Back to homepage</a>
+  </header>
+
+  <main class="fb-login-main">
+    <section class="fb-login-card" aria-labelledby="login-title">
+      <div class="fb-login-intro">
+        <p class="fb-section-kicker">Account access</p>
+        <h1>Good to see you.</h1>
+        <p>Connect local food businesses, community kitchens, and volunteers to coordinate surplus food in Gurugram.</p>
+      </div>
+
+      <div class="fb-login-form-panel">
+        <p id="auth-notice" class="fb-login-notice" role="status" aria-live="polite" hidden></p>
+        <p id="auth-error" class="fb-login-error" role="alert" hidden></p>
+        <section id="login-panel">
+          <h2 id="login-title">Welcome back</h2>
+          <p class="fb-login-subtitle">Sign in to your FoodBridge account.</p>
+          <form id="login-form" aria-label="FoodBridge sign in">
+          <fieldset id="login-fields" disabled>
+            <label for="login-email">Email address</label>
+            <input id="login-email" name="email" type="email" autocomplete="username" placeholder="you@example.com" required>
+            <label for="login-password">Password</label>
+            <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+            <button id="login-submit" type="submit" class="btn-primary">Log in</button>
+            <button id="reset-password" type="button" class="fb-login-reset">Forgot password?</button>
+          </fieldset>
+          </form>
+          <p class="fb-login-switch">New to FoodBridge? <button id="show-signup" type="button">Create an account</button></p>
+        </section>
+        <section id="signup-panel" hidden>
+          <h2>Create your account</h2>
+          <p class="fb-login-subtitle">Join the Gurugram food-sharing network.</p>
+          <form id="signup-form" aria-label="Create a FoodBridge account">
+            <fieldset id="signup-fields" disabled>
+              <label for="signup-name">Your name</label>
+              <input id="signup-name" name="name" type="text" autocomplete="name" maxlength="80" required>
+              <label for="signup-email">Email address</label>
+              <input id="signup-email" name="email" type="email" autocomplete="email" required>
+              <label for="signup-role">I am joining as</label>
+              <select id="signup-role" name="role" required>
+                <option value="donor">Food donor / kitchen</option>
+                <option value="kitchen">Community kitchen / recipient</option>
+                <option value="volunteer">Volunteer</option>
+              </select>
+              <label for="signup-password">Create a password</label>
+              <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+              <button id="signup-submit" type="submit" class="btn-primary">Create account</button>
+            </fieldset>
+          </form>
+          <p class="fb-login-switch">Already have an account? <button id="show-login" type="button">Log in</button></p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fb-login-footer">
+    <span>&copy; 2026 FoodBridge · Gurugram, Haryana</span>
+    <a href="privacy.html">Privacy notice</a>
+  </footer>
+  <script type="module" src="assets/js/login.js"></script>
+</body>
+</html>

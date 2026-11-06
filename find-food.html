@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find available food | FoodBridge</title>
+  <meta name="description" content="Browse available surplus food and request it for your community kitchen.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/css/tailwind.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/icons.js"></script>
+</head>
+<body class="bg-white text-slate-800 antialiased font-sans">
+  <div class="fb-announcement">FOODBRIDGE · GURUGRAM COMMUNITY FOOD NETWORK</div>
+  <header class="fb-app-header">
+    <a href="index.html" class="flex items-center gap-3" aria-label="FoodBridge home"><span class="fb-brand-mark" aria-hidden="true">F</span><strong class="text-xl font-bold tracking-tight text-slate-900">FoodBridge</strong></a>
+    <nav aria-label="Main navigation"><a href="share-food.html">Share food</a><a href="find-food.html" aria-current="page">Find food</a><a href="volunteer.html">Volunteer</a></nav>
+    <div id="desktop-account-nav" class="fb-account-nav"><a class="btn-secondary" href="login.html">Log in</a></div>
+  </header>
+  <main class="fb-app-main">
+    <a href="index.html" class="fb-app-back">&larr; Home</a>
+    <header class="fb-app-title">
+      <p class="fb-section-kicker">Community kitchen workspace</p>
+      <h1>Find available food</h1>
+      <p>Browse current food listings from donors in Gurugram. Send a request to the donor; pickup details are shared after acceptance.</p>
+    </header>
+    <p id="page-status" class="fb-page-status" role="status">Checking your community-kitchen access...</p>
+    <section id="page-content" class="fb-app-grid fb-app-grid-one" hidden>
+      <section class="fb-app-card">
+        <div class="fb-card-heading"><div><h2>Available food</h2><p class="fb-app-help">Listings are shown newest first. Contact details remain private until the donor accepts your request.</p></div><button id="refresh-listings" type="button" class="btn-secondary">Refresh</button></div>
+        <div id="listing-list" class="fb-record-list"><p>Loading available listings...</p></div>
+      </section>
+      <section class="fb-app-card">
+        <h2>Your requests</h2>
+        <div id="request-list" class="fb-record-list"><p>Loading your requests...</p></div>
+      </section>
+    </section>
+  </main>
+  <footer class="fb-login-footer"><span>&copy; 2026 FoodBridge · Gurugram, Haryana</span><a href="privacy.html">Privacy notice</a></footer>
+  <script type="module" src="assets/js/account-nav.js"></script>
+  <script type="module" src="assets/js/find-food.js"></script>
+</body>
+</html>

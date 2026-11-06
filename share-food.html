@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Share surplus food | FoodBridge</title>
+  <meta name="description" content="Post and manage surplus food listings for community kitchens in Gurugram.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/css/tailwind.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/icons.js"></script>
+</head>
+<body class="bg-white text-slate-800 antialiased font-sans">
+  <div class="fb-announcement">FOODBRIDGE · GURUGRAM COMMUNITY FOOD NETWORK</div>
+  <header class="fb-app-header">
+    <a href="index.html" class="flex items-center gap-3" aria-label="FoodBridge home"><span class="fb-brand-mark" aria-hidden="true">F</span><strong class="text-xl font-bold tracking-tight text-slate-900">FoodBridge</strong></a>
+    <nav aria-label="Main navigation"><a href="share-food.html" aria-current="page">Share food</a><a href="find-food.html">Find food</a><a href="volunteer.html">Volunteer</a></nav>
+    <div id="desktop-account-nav" class="fb-account-nav"><a class="btn-secondary" href="login.html">Log in</a></div>
+  </header>
+  <main class="fb-app-main">
+    <a href="index.html" class="fb-app-back">&larr; Home</a>
+    <header class="fb-app-title">
+      <p class="fb-section-kicker">Food donor workspace</p>
+      <h1>Share surplus food</h1>
+      <p>Post available food for approved community kitchens in Gurugram. Exact pickup details are shared only after you accept a request.</p>
+    </header>
+    <p id="page-status" class="fb-page-status" role="status">Checking your donor access...</p>
+    <div id="page-content" class="fb-app-grid" hidden>
+      <section class="fb-app-card">
+        <h2>New food listing</h2>
+        <p class="fb-app-help">Only post food that your organization is permitted and able to donate safely.</p>
+        <form id="listing-form" class="fb-app-form">
+          <label for="food-name">Food name</label>
+          <input id="food-name" name="foodName" type="text" maxlength="100" required placeholder="e.g. Fresh seasonal vegetables">
+          <label for="food-category">Food category</label>
+          <select id="food-category" name="category" required>
+            <option value="produce">Produce</option>
+            <option value="bakery">Bakery</option>
+            <option value="packaged">Packaged</option>
+            <option value="prepared">Prepared food</option>
+            <option value="other">Other</option>
+          </select>
+          <div class="fb-form-pair">
+            <div><label for="food-quantity">Quantity</label><input id="food-quantity" name="quantity" type="number" min="0.1" max="10000" step="0.1" required></div>
+            <div><label for="food-unit">Unit</label><select id="food-unit" name="unit"><option value="kg">kg</option><option value="portions">portions</option><option value="boxes">boxes</option></select></div>
+          </div>
+          <label for="pickup-area">Pickup area / sector</label>
+          <input id="pickup-area" name="pickupArea" type="text" maxlength="100" required placeholder="e.g. Sector 29, Gurugram">
+          <label for="pickup-by">Pickup deadline</label>
+          <input id="pickup-by" name="pickupBy" type="datetime-local" required>
+          <label for="expires-at">Use by / best before</label>
+          <input id="expires-at" name="expiresAt" type="datetime-local" required>
+          <label for="pickup-address">Exact pickup address</label>
+          <textarea id="pickup-address" name="pickupAddress" rows="2" maxlength="300" required></textarea>
+          <label for="contact-phone">Contact phone</label>
+          <input id="contact-phone" name="contactPhone" type="tel" minlength="8" maxlength="25" autocomplete="tel" required>
+          <label for="food-notes">Food and handling notes</label>
+          <textarea id="food-notes" name="notes" rows="3" maxlength="500" placeholder="Ingredients, storage, allergens, or collection instructions"></textarea>
+          <label class="fb-check-label"><input id="food-safety-confirmed" type="checkbox" required> I confirm this food has been handled and stored safely and the details are accurate.</label>
+          <button id="listing-submit" type="submit" class="btn-primary">Publish listing</button>
+          <p id="form-message" class="fb-page-status" role="status" hidden></p>
+        </form>
+      </section>
+      <section class="fb-app-card">
+        <div class="fb-card-heading"><div><h2>Your listings</h2><p class="fb-app-help">Review requests and manage available food.</p></div><button id="refresh-listings" type="button" class="btn-secondary">Refresh</button></div>
+        <div id="listing-list" class="fb-record-list"><p>Loading your listings...</p></div>
+      </section>
+    </div>
+  </main>
+  <footer class="fb-login-footer"><span>&copy; 2026 FoodBridge · Gurugram, Haryana</span><a href="privacy.html">Privacy notice</a></footer>
+  <script type="module" src="assets/js/account-nav.js"></script>
+  <script type="module" src="assets/js/share-food.js"></script>
+</body>
+</html>

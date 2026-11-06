@@ -1,0 +1,47 @@
+# Environment and Secrets
+.env
+.env.local
+.env.*.local
+*.env
+
+# Credentials and Keys
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+id_rsa
+id_ed25519
+secrets/
+
+# Database & Runtime Data
+pgdata/
+redisdata/
+*.log
+*.sqlite3
+
+# Python Cache & Testing
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Operating System & Editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary artifacts
+temp/
+tmp/
+temp_storage/
+

@@ -1,0 +1,109 @@
+services:
+  # ============================================================================
+  # 1. Reverse Proxy & TLS Edge Gateway (Nginx)
+  # ============================================================================
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certs:/etc/letsencrypt:ro
+      - upload_data:/var/foodbridge/storage/uploads:ro
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - foodbridge_net
+
+  # ============================================================================
+  # 2. Logistics & Safety Verification API Backend Service (Python)
+  # Resolves upstream 'api-service-1' and 'api-service-2' configured in nginx.conf
+  # ============================================================================
+  api:
+    image: python:3.11-alpine
+    working_dir: /app
+    volumes:
+      - .:/app:ro
+      - upload_data:/var/foodbridge/storage/uploads
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8080"
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-foodbridge}
+      POSTGRES_USER: ${POSTGRES_USER:-foodbridge_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME_GENERATE_32_CHAR_RANDOM_SECRET}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-CHANGE_ME_GENERATE_32_CHAR_RANDOM_SECRET}
+      UPLOAD_STORAGE_DIR: /var/foodbridge/storage/uploads
+    command: python services/api_server.py
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      foodbridge_net:
+        aliases:
+          - api-service-1
+          - api-service-2
+
+  # ============================================================================
+  # 3. Relational & Geospatial Storage (PostgreSQL 16 + PostGIS 3.4)
+  # ============================================================================
+  db:
+    image: postgis/postgis:16-3.4-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-foodbridge}
+      POSTGRES_USER: ${POSTGRES_USER:-foodbridge_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME_GENERATE_32_CHAR_RANDOM_SECRET}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "127.0.0.1:5432:5432" # Bind strictly to loopback, never public interface
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-foodbridge_app} -d ${POSTGRES_DB:-foodbridge}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - foodbridge_net
+
+  # ============================================================================
+  # 4. Rate Limiting State & L2 Distributed Cache (Redis 7)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:-CHANGE_ME_GENERATE_32_CHAR_RANDOM_SECRET}"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-CHANGE_ME_GENERATE_32_CHAR_RANDOM_SECRET}
+    volumes:
+      - redisdata:/data
+    ports:
+      - "127.0.0.1:6379:6379" # Bind strictly to loopback, never public interface
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-CHANGE_ME_GENERATE_32_CHAR_RANDOM_SECRET}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - foodbridge_net
+
+volumes:
+  pgdata:
+  redisdata:
+  upload_data:
+
+networks:
+  foodbridge_net:
+    driver: bridge

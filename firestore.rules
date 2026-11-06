@@ -1,0 +1,274 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function profilePath(uid) {
+      return /databases/$(database)/documents/profiles/$(uid);
+    }
+
+    function hasProfile() {
+      return signedIn() && exists(profilePath(request.auth.uid));
+    }
+
+    function approved(role) {
+      return hasProfile()
+        && get(profilePath(request.auth.uid)).data.role == role
+        && get(profilePath(request.auth.uid)).data.approvalStatus == "approved";
+    }
+
+    function listingPath(listingId) {
+      return /databases/$(database)/documents/listings/$(listingId);
+    }
+
+    function requestPath(requestId) {
+      return /databases/$(database)/documents/requests/$(requestId);
+    }
+
+    function taskPath(taskId) {
+      return /databases/$(database)/documents/deliveryTasks/$(taskId);
+    }
+
+    match /profiles/{uid} {
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && !exists(profilePath(uid))
+        && request.resource.data.keys().hasOnly([
+          "displayName", "requestedRole", "role", "approvalStatus", "createdAt"
+        ])
+        && request.resource.data.keys().hasAll([
+          "displayName", "requestedRole", "role", "approvalStatus", "createdAt"
+        ])
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() >= 2
+        && request.resource.data.displayName.size() <= 80
+        && request.resource.data.requestedRole in ["donor", "kitchen", "volunteer"]
+        && request.resource.data.role == "pending"
+        && request.resource.data.approvalStatus == "pending"
+        && request.resource.data.createdAt == request.time;
+
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list: if false;
+
+      allow update: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["displayName", "updatedAt"])
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() >= 2
+        && request.resource.data.displayName.size() <= 80;
+
+      allow delete: if false;
+    }
+
+    match /listings/{listingId} {
+      allow create: if approved("donor")
+        && request.resource.data.keys().hasOnly([
+          "ownerUid", "donorName", "foodName", "category", "quantity", "unit",
+          "pickupArea", "serviceArea", "pickupBy", "expiresAt", "notes",
+          "foodSafetyConfirmed", "status", "createdAt"
+        ])
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.donorName == get(profilePath(request.auth.uid)).data.displayName
+        && request.resource.data.foodName is string
+        && request.resource.data.foodName.size() >= 3
+        && request.resource.data.foodName.size() <= 100
+        && request.resource.data.category in ["produce", "bakery", "packaged", "prepared", "other"]
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.quantity <= 10000
+        && request.resource.data.unit in ["kg", "portions", "boxes"]
+        && request.resource.data.pickupArea is string
+        && request.resource.data.pickupArea.size() >= 2
+        && request.resource.data.pickupArea.size() <= 100
+        && request.resource.data.serviceArea == "Gurugram, Haryana"
+        && request.resource.data.pickupBy is timestamp
+        && request.resource.data.pickupBy > request.time
+        && request.resource.data.expiresAt is timestamp
+        && request.resource.data.expiresAt >= request.resource.data.pickupBy
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() <= 500
+        && request.resource.data.foodSafetyConfirmed == true
+        && request.resource.data.status == "available"
+        && request.resource.data.createdAt == request.time;
+
+      allow get: if signedIn() && (
+        resource.data.ownerUid == request.auth.uid
+        || (approved("kitchen") && resource.data.matchedKitchenUid == request.auth.uid)
+        || (approved("volunteer")
+          && resource.data.deliveryTaskId is string
+          && exists(/databases/$(database)/documents/deliveryTasks/$(resource.data.deliveryTaskId))
+          && get(/databases/$(database)/documents/deliveryTasks/$(resource.data.deliveryTaskId)).data.volunteerUid == request.auth.uid)
+      );
+
+      allow list: if signedIn() && (
+        resource.data.ownerUid == request.auth.uid
+        || ((approved("kitchen") || approved("volunteer")) && resource.data.status == "available")
+      );
+
+      allow update: if approved("donor")
+        && resource.data.ownerUid == request.auth.uid
+        && resource.data.status == "available"
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "status", "matchedKitchenUid", "acceptedRequestId", "deliveryTaskId", "matchedAt"
+        ])
+        && (
+          request.resource.data.status == "cancelled"
+          || (
+            request.resource.data.status == "matched"
+            && request.resource.data.matchedKitchenUid is string
+            && request.resource.data.acceptedRequestId is string
+            && request.resource.data.deliveryTaskId is string
+            && request.resource.data.matchedAt == request.time
+            && getAfter(requestPath(request.resource.data.acceptedRequestId)).data.status == "accepted"
+            && getAfter(requestPath(request.resource.data.acceptedRequestId)).data.donorUid == request.auth.uid
+            && getAfter(requestPath(request.resource.data.acceptedRequestId)).data.requesterUid == request.resource.data.matchedKitchenUid
+            && getAfter(requestPath(request.resource.data.acceptedRequestId)).data.listingId == listingId
+            && getAfter(taskPath(request.resource.data.deliveryTaskId)).data.status == "open"
+            && getAfter(taskPath(request.resource.data.deliveryTaskId)).data.listingId == listingId
+            && getAfter(taskPath(request.resource.data.deliveryTaskId)).data.requestId == request.resource.data.acceptedRequestId
+            && getAfter(taskPath(request.resource.data.deliveryTaskId)).data.donorUid == request.auth.uid
+            && getAfter(taskPath(request.resource.data.deliveryTaskId)).data.kitchenUid == request.resource.data.matchedKitchenUid
+          )
+        );
+
+      allow delete: if false;
+    }
+
+    match /listingPrivate/{listingId} {
+      allow create: if approved("donor")
+        && request.resource.data.keys().hasOnly(["ownerUid", "pickupAddress", "contactPhone"])
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.pickupAddress is string
+        && request.resource.data.pickupAddress.size() >= 8
+        && request.resource.data.pickupAddress.size() <= 300
+        && request.resource.data.contactPhone is string
+        && request.resource.data.contactPhone.size() >= 8
+        && request.resource.data.contactPhone.size() <= 25
+        && getAfter(listingPath(listingId)).data.ownerUid == request.auth.uid;
+
+      allow get: if signedIn() && (
+        resource.data.ownerUid == request.auth.uid
+        || (approved("kitchen")
+          && get(listingPath(listingId)).data.status == "matched"
+          && get(listingPath(listingId)).data.matchedKitchenUid == request.auth.uid)
+        || (approved("volunteer")
+          && get(listingPath(listingId)).data.deliveryTaskId is string
+          && exists(taskPath(get(listingPath(listingId)).data.deliveryTaskId))
+          && get(taskPath(get(listingPath(listingId)).data.deliveryTaskId)).data.volunteerUid == request.auth.uid)
+      );
+
+      allow list, update, delete: if false;
+    }
+
+    match /requests/{requestId} {
+      allow create: if approved("kitchen")
+        && request.resource.data.keys().hasOnly([
+          "listingId", "foodName", "requesterUid", "requesterName", "donorUid", "message", "status", "createdAt"
+        ])
+        && request.resource.data.requesterUid == request.auth.uid
+        && request.resource.data.requesterName == get(profilePath(request.auth.uid)).data.displayName
+        && request.resource.data.listingId is string
+        && request.resource.data.foodName == get(listingPath(request.resource.data.listingId)).data.foodName
+        && get(listingPath(request.resource.data.listingId)).data.status == "available"
+        && get(listingPath(request.resource.data.listingId)).data.ownerUid == request.resource.data.donorUid
+        && request.resource.data.donorUid != request.auth.uid
+        && request.resource.data.message is string
+        && request.resource.data.message.size() >= 5
+        && request.resource.data.message.size() <= 500
+        && request.resource.data.status == "pending"
+        && request.resource.data.createdAt == request.time;
+
+      allow get, list: if signedIn()
+        && (resource.data.donorUid == request.auth.uid || resource.data.requesterUid == request.auth.uid);
+
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "updatedAt"])
+        && request.resource.data.updatedAt == request.time
+        && (
+          (resource.data.donorUid == request.auth.uid
+            && approved("donor")
+            && resource.data.status == "pending"
+            && request.resource.data.status in ["accepted", "rejected"]
+            && (
+              request.resource.data.status == "rejected"
+              || (
+                getAfter(listingPath(resource.data.listingId)).data.status == "matched"
+                && getAfter(listingPath(resource.data.listingId)).data.acceptedRequestId == requestId
+                && getAfter(listingPath(resource.data.listingId)).data.matchedKitchenUid == resource.data.requesterUid
+                && getAfter(listingPath(resource.data.listingId)).data.deliveryTaskId is string
+                && getAfter(taskPath(getAfter(listingPath(resource.data.listingId)).data.deliveryTaskId)).data.requestId == requestId
+              )
+            ))
+          || (resource.data.requesterUid == request.auth.uid
+            && approved("kitchen")
+            && resource.data.status == "pending"
+            && request.resource.data.status == "withdrawn")
+        );
+
+      allow delete: if false;
+    }
+
+    match /deliveryTasks/{taskId} {
+      allow create: if approved("donor")
+        && request.resource.data.keys().hasOnly([
+          "listingId", "requestId", "donorUid", "kitchenUid", "volunteerUid",
+          "status", "foodName", "quantity", "unit", "pickupBy", "pickupArea", "createdAt"
+        ])
+        && request.resource.data.donorUid == request.auth.uid
+        && request.resource.data.volunteerUid == null
+        && request.resource.data.status == "open"
+        && request.resource.data.foodName is string
+        && request.resource.data.foodName.size() >= 3
+        && request.resource.data.foodName.size() <= 100
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.unit in ["kg", "portions", "boxes"]
+        && request.resource.data.pickupBy is timestamp
+        && request.resource.data.pickupArea is string
+        && request.resource.data.createdAt == request.time
+        && getAfter(listingPath(request.resource.data.listingId)).data.deliveryTaskId == taskId
+        && getAfter(listingPath(request.resource.data.listingId)).data.ownerUid == request.auth.uid
+        && request.resource.data.foodName == getAfter(listingPath(request.resource.data.listingId)).data.foodName
+        && request.resource.data.quantity == getAfter(listingPath(request.resource.data.listingId)).data.quantity
+        && request.resource.data.unit == getAfter(listingPath(request.resource.data.listingId)).data.unit
+        && request.resource.data.pickupBy == getAfter(listingPath(request.resource.data.listingId)).data.pickupBy
+        && request.resource.data.pickupArea == getAfter(listingPath(request.resource.data.listingId)).data.pickupArea
+        && getAfter(requestPath(request.resource.data.requestId)).data.status == "accepted"
+        && getAfter(requestPath(request.resource.data.requestId)).data.listingId == request.resource.data.listingId
+        && getAfter(requestPath(request.resource.data.requestId)).data.requesterUid == request.resource.data.kitchenUid;
+
+      allow get: if signedIn() && (
+        (approved("volunteer") && resource.data.status == "open")
+        || resource.data.donorUid == request.auth.uid
+        || resource.data.kitchenUid == request.auth.uid
+        || resource.data.volunteerUid == request.auth.uid
+      );
+
+      allow list: if signedIn() && (
+        (approved("volunteer") && resource.data.status == "open")
+        || resource.data.donorUid == request.auth.uid
+        || resource.data.kitchenUid == request.auth.uid
+        || resource.data.volunteerUid == request.auth.uid
+      );
+
+      allow update: if approved("volunteer")
+        && (
+          (resource.data.status == "open"
+            && resource.data.volunteerUid == null
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "volunteerUid", "claimedAt"])
+            && request.resource.data.status == "claimed"
+            && request.resource.data.volunteerUid == request.auth.uid
+            && request.resource.data.claimedAt == request.time)
+          || (resource.data.status == "claimed"
+            && resource.data.volunteerUid == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "completedAt"])
+            && request.resource.data.status == "delivered"
+            && request.resource.data.completedAt == request.time)
+        );
+
+      allow delete: if false;
+    }
+  }
+}

@@ -1,0 +1,613 @@
+openapi: 3.1.0
+info:
+  title: FoodBridge Commercial Surplus Logistics API
+  version: 1.0.0
+  description: >
+    Production REST API for commercial surplus food manifests, spatial capacity
+    matching, chain-of-custody tracking, and IRC Section 170(e)(3) tax receipt generation.
+  contact:
+    name: FoodBridge Engineering Team
+    email: engineering@foodbridge.org
+    url: https://foodbridge.org
+servers:
+  - url: https://api.foodbridge.org/v1
+    description: Production API Gateway
+  - url: https://staging-api.foodbridge.org/v1
+    description: Staging Environment
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  /donations:
+    post:
+      summary: Submit Commercial Surplus Manifest
+      description: Registers an itemized commercial food surplus lot available for collection.
+      operationId: createDonation
+      tags:
+        - Donations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonationManifestRequest'
+      responses:
+        '201':
+          description: Surplus manifest successfully created and scheduled for matching.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonationManifestResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '422':
+          $ref: '#/components/responses/422Unprocessable'
+
+  /donations/{id}:
+    get:
+      summary: Retrieve Donation Manifest Details
+      operationId: getDonationById
+      tags:
+        - Donations
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Manifest details retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonationManifestResponse'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  /dispatches/{id}/temperature-checkpoint:
+    post:
+      summary: Record Cold-Chain Temperature Checkpoint
+      description: Logs infrared probe temperature during pickup, in-transit, or delivery inspection.
+      operationId: recordTemperatureCheckpoint
+      tags:
+        - Telemetry & Food Safety
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemperatureLogRequest'
+      responses:
+        '201':
+          description: Temperature log registered and evaluated for compliance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemperatureLogResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+
+  /dispatches/{id}/custody-transfer:
+    post:
+      summary: Execute Electronic Custody Transfer
+      description: Records digital signoff and weight confirmation at pickup or agency delivery.
+      operationId: recordCustodyTransfer
+      tags:
+        - Chain of Custody
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustodyTransferRequest'
+      responses:
+        '200':
+          description: Transfer executed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustodyTransferResponse'
+
+  /tax-receipts/{id}:
+    get:
+      summary: Export Contemporaneous Written Acknowledgment
+      description: Generates an immutable tax substantiation receipt under IRC Section 170(e)(3).
+      operationId: getTaxReceipt
+      tags:
+        - Compliance & Tax
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Receipt retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxReceiptResponse'
+
+  /agencies/register:
+    post:
+      summary: Apply for Recipient Agency Status
+      description: Registers a 501(c)(3) entity for surplus food intake.
+      operationId: registerAgency
+      tags:
+        - Agency Partner Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgencyRegistrationRequest'
+      responses:
+        '202':
+          description: Application received; pending verification of EIN and health permit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgencyRegistrationResponse'
+
+  /uploads/manifest-photo:
+    post:
+      summary: Upload Manifest Inspection Photo
+      description: >
+        Uploads an inspection photo for a surplus lot. Validates binary magic bytes (JPEG or PNG only, max 5 MB).
+        Stores file outside web root with zero execution permissions.
+      operationId: uploadManifestPhoto
+      tags:
+        - Secure Storage & Telemetry
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Binary image payload (image/jpeg or image/png, maximum 5 MB).
+      responses:
+        '201':
+          description: File validated against magic bytes and securely stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '413':
+          $ref: '#/components/responses/413PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/415UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /uploads/agency-permit:
+    post:
+      summary: Upload Recipient Agency Permit Document
+      description: >
+        Uploads an IRS 501(c)(3) letter or municipal health permit (PDF, JPEG, PNG, max 10 MB).
+      operationId: uploadAgencyPermit
+      tags:
+        - Secure Storage & Telemetry
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Binary document payload (application/pdf, image/jpeg, image/png, maximum 10 MB).
+      responses:
+        '201':
+          description: Document stored in isolated storage outside web root.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '413':
+          $ref: '#/components/responses/413PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/415UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  responses:
+    400BadRequest:
+      description: Invalid request syntax or parameter violation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    401Unauthorized:
+      description: Missing or expired authentication credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    404NotFound:
+      description: Requested entity does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    413PayloadTooLarge:
+      description: Uploaded file exceeds maximum size threshold (5MB for images, 10MB for documents).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    415UnsupportedMediaType:
+      description: Binary magic-byte inspection failed. File format rejected.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    422Unprocessable:
+      description: Business rule or food safety constraint violation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    500InternalError:
+      description: Internal server error. Generic response without internal stack trace or database error details.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    DonationManifestRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - donorFacilityId
+        - availableFrom
+        - availableUntil
+        - certifierFullName
+        - items
+      properties:
+        donorFacilityId:
+          type: string
+          format: uuid
+        availableFrom:
+          type: string
+          format: date-time
+        availableUntil:
+          type: string
+          format: date-time
+        certifierFullName:
+          type: string
+          minLength: 3
+          maxLength: 100
+          pattern: '^[A-Za-z0-9\s.,''-]{3,100}$'
+          example: Chef Marcus Rivera
+        certifierFoodHandlerCert:
+          type: string
+          minLength: 3
+          maxLength: 30
+          pattern: '^[A-Za-z0-9\-/]{3,30}$'
+          example: SERVSAFE-928104
+        items:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/ManifestItemInput'
+
+    ManifestItemInput:
+      type: object
+      additionalProperties: false
+      required:
+        - category
+        - itemDescription
+        - estimatedWeightLbs
+        - containerCount
+        - packagingType
+        - holdingTempFahrenheit
+      properties:
+        category:
+          type: string
+          enum: [prepared_hot, chilled_perishable, commercial_bakery, unprocessed_produce, shelf_stable_dry]
+        itemDescription:
+          type: string
+          minLength: 3
+          maxLength: 150
+          pattern: '^[A-Za-z0-9\s.,''()-]{3,150}$'
+          example: Roast chicken and steamed seasonal vegetables
+        estimatedWeightLbs:
+          type: number
+          minimum: 1.0
+          maximum: 25000.0
+          example: 120.5
+        containerCount:
+          type: integer
+          minimum: 1
+          maximum: 500
+          example: 6
+        packagingType:
+          type: string
+          minLength: 3
+          maxLength: 80
+          example: Full-size 4-inch deep aluminum hotel pans
+        holdingTempFahrenheit:
+          type: number
+          minimum: 0.0
+          maximum: 212.0
+          example: 142.5
+        containsMajorAllergens:
+          type: boolean
+          default: false
+        allergenDetails:
+          type: string
+          maxLength: 200
+          example: Contains dairy
+
+    DonationManifestResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        manifestReference:
+          type: string
+          pattern: '^FB-DSP-[0-9]{4,6}$'
+          example: FB-DSP-2849
+        status:
+          type: string
+          enum: [manifested, matched, driver_assigned, at_pickup, in_transit, delivered, rejected_safety_failure, cancelled]
+          example: manifested
+        totalGrossWeightLbs:
+          type: number
+          example: 120.5
+        createdAt:
+          type: string
+          format: date-time
+
+    TemperatureLogRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - checkpoint
+        - measuredTempFahrenheit
+      properties:
+        checkpoint:
+          type: string
+          enum: [pickup_verification, in_transit, delivery_intake]
+        measuredTempFahrenheit:
+          type: number
+          minimum: 0.0
+          maximum: 212.0
+          example: 141.2
+        measurementDeviceId:
+          type: string
+          minLength: 3
+          maxLength: 64
+          pattern: '^[A-Za-z0-9\-_]{3,64}$'
+          example: COOPER-ATKINS-INFRARED-04
+
+    TemperatureLogResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        logId:
+          type: string
+          format: uuid
+        isCompliant:
+          type: boolean
+          example: true
+        complianceThreshold:
+          type: string
+          example: '>= 135 deg F (FDA Food Code 3-501.16)'
+        recordedAt:
+          type: string
+          format: date-time
+
+    CustodyTransferRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - transferStage
+        - verifiedGrossWeightLbs
+      properties:
+        transferStage:
+          type: string
+          enum: [donor_to_driver, driver_to_agency]
+        verifiedGrossWeightLbs:
+          type: number
+          minimum: 1.0
+          maximum: 25000.0
+          example: 119.8
+        notes:
+          type: string
+          maxLength: 250
+          example: Intact aluminum covers; temperature checked
+
+    CustodyTransferResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        transferId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          example: completed
+        timestamp:
+          type: string
+          format: date-time
+
+    TaxReceiptResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receiptReferenceNumber:
+          type: string
+          example: TAX-2026-FB-8942
+        issuedDate:
+          type: string
+          format: date
+        donorOrganizationName:
+          type: string
+          example: Grand Azure Hospitality LLC
+        recipientOrganizationName:
+          type: string
+          example: St. Jude Community Food Foundation (EIN 13-9821049)
+        totalEligibleWeightLbs:
+          type: number
+          example: 119.8
+        statutoryAcknowledgmentText:
+          type: string
+        sha256VerificationHash:
+          type: string
+          pattern: '^[a-f0-9]{64}$'
+          example: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+    AgencyRegistrationRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - legalName
+        - einTaxIdentifier
+        - streetAddress
+        - healthPermitNumber
+        - dailyMealCapacity
+        - refrigerationType
+        - directorEmail
+      properties:
+        legalName:
+          type: string
+          minLength: 3
+          maxLength: 120
+          pattern: '^[A-Za-z0-9\s.,''-]{3,120}$'
+          example: City Relief Community Outreach
+        einTaxIdentifier:
+          type: string
+          pattern: '^\d{2}-\d{7}$'
+          example: 12-3456789
+        streetAddress:
+          type: string
+          minLength: 10
+          maxLength: 250
+          pattern: '^[A-Za-z0-9\s.,#\-/]{10,250}$'
+          example: 410 West 42nd St, New York, NY 10036
+        healthPermitNumber:
+          type: string
+          minLength: 3
+          maxLength: 30
+          pattern: '^[A-Za-z0-9\-/]{3,30}$'
+          example: DOH-2024-NYC-8192
+        dailyMealCapacity:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          example: 250
+        refrigerationType:
+          type: string
+          enum: [commercial_walk_in, commercial_reach_in, standard_residential, ambient_dry_only]
+        directorEmail:
+          type: string
+          format: email
+          maxLength: 120
+          example: director@cityrelief.org
+
+    AgencyRegistrationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        applicationId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          example: pending_compliance_review
+        submittedAt:
+          type: string
+          format: date-time
+
+    FileUploadResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - fileId
+        - verifiedMimeType
+        - sizeBytes
+        - storageReference
+      properties:
+        fileId:
+          type: string
+          format: uuid
+          example: 4bf92f35-77b3-4da6-a3ce-929d0e0e4736
+        verifiedMimeType:
+          type: string
+          enum: [image/jpeg, image/png, application/pdf]
+          example: image/jpeg
+        sizeBytes:
+          type: integer
+          example: 1048576
+        storageReference:
+          type: string
+          example: d4f19b885c4e4f118921982104918234.jpg
+        uploadedAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+        - correlationId
+      properties:
+        code:
+          type: string
+          example: INVALID_TEMPERATURE_THRESHOLD
+        message:
+          type: string
+          example: Prepared hot food must be >= 135 deg F to satisfy FDA Food Code criteria.
+        correlationId:
+          type: string
+          example: req-982104-fb

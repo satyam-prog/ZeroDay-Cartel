@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodBridge | Good food, shared</title>
+  <meta name="description" content="Share surplus food, request community kitchen donations, and coordinate volunteer deliveries in Gurugram with FoodBridge.">
+  <meta property="og:title" content="FoodBridge | Good food, shared">
+  <meta property="og:description" content="Connect food donors, community kitchens, and volunteers across Gurugram.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/css/tailwind.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/icons.js"></script>
+</head>
+<body class="bg-white text-slate-800 antialiased font-sans">
+  <div class="fb-announcement">
+    FOODBRIDGE · GURUGRAM COMMUNITY FOOD NETWORK
+  </div>
+
+  <header class="bg-white sticky top-0 z-30 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex items-center justify-between">
+      <a href="#home" class="flex items-center gap-3" aria-label="FoodBridge home">
+        <span class="fb-brand-mark" aria-hidden="true">F</span>
+        <span>
+          <strong class="text-xl font-bold tracking-tight text-slate-900 block leading-tight">FoodBridge</strong>
+          <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Good food, shared</span>
+        </span>
+      </a>
+      <nav class="hidden md:flex items-center gap-5 text-sm font-medium text-slate-700" aria-label="Main navigation">
+        <a href="#why" class="hover:text-emerald-800">Why it matters</a>
+        <a href="share-food.html" class="hover:text-emerald-800">Share food</a>
+        <a href="find-food.html" class="hover:text-emerald-800">Find food</a>
+        <a href="volunteer.html" class="hover:text-emerald-800">Volunteer</a>
+      </nav>
+      <div id="desktop-account-nav" class="fb-account-nav"><a class="btn-secondary" href="login.html">Log in</a></div>
+      <button id="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" class="md:hidden p-2 rounded text-slate-700 hover:bg-slate-100" aria-label="Toggle navigation menu">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+    </div>
+    <nav id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-2 text-sm font-medium text-slate-700" aria-label="Mobile navigation">
+      <a href="#why" class="block py-2">Why it matters</a>
+      <a href="share-food.html" class="block py-2">Share surplus food</a>
+      <a href="find-food.html" class="block py-2">Find food</a>
+      <a href="volunteer.html" class="block py-2">Volunteer delivery</a>
+      <div id="mobile-account-nav" class="fb-mobile-account-nav"><a href="login.html">Log in / Create account</a></div>
+    </nav>
+  </header>
+
+  <main id="home">
+    <section class="fb-hero">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 fb-hero-grid">
+        <div class="fb-hero-copy">
+          <p class="fb-eyebrow"><span class="fb-eyebrow-dot"></span> Gurugram food-sharing network</p>
+          <h1>Good food belongs on plates, <span>not in landfills.</span></h1>
+          <p class="fb-hero-intro">FoodBridge helps food donors, community kitchens, and local volunteers coordinate surplus food across Gurugram.</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href="share-food.html" class="btn-primary">Share surplus food <span aria-hidden="true">-&gt;</span></a>
+            <a href="find-food.html" class="btn-secondary">Find available food</a>
+          </div>
+          <p class="fb-account-note">Create an account to get started. New community accounts are reviewed before food-sharing tools are enabled.</p>
+        </div>
+        <div class="fb-hero-visual">
+          <img src="assets/images/foodbridge-illustration.svg" alt="Illustration of fresh produce moving from a community kitchen toward a shared table">
+          <div class="fb-hero-sticker">
+            <span class="fb-sticker-icon" aria-hidden="true">+</span>
+            <span><strong>Good food</strong><small>Closer to home</small></span>
+          </div>
+        </div>
+      </div>
+      <div class="fb-hero-bottom max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <span>Less waste</span><span class="fb-bottom-dot"></span><span>More shared meals</span><span class="fb-bottom-dot"></span><span>Stronger communities</span>
+      </div>
+    </section>
+
+    <section id="why" class="py-16 lg:py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="fb-section-heading">
+          <p class="fb-section-kicker">The challenge</p>
+          <h2>There is enough food. The connection is missing.</h2>
+          <p>Good food can be left behind when kitchens and community organizations have no easy way to find one another in time.</p>
+        </div>
+        <div class="fb-problem-grid">
+          <article class="fb-stat-card">
+            <span class="fb-stat-icon" aria-hidden="true">01</span>
+            <strong>1.05 billion tonnes</strong>
+            <h3>of food went to waste</h3>
+            <p>Across households, food service and retail worldwide in 2022.</p>
+            <a href="https://www.unep.org/resources/publication/food-waste-index-report-2024" target="_blank" rel="noopener noreferrer">UNEP Food Waste Index 2024 <span aria-hidden="true">-&gt;</span></a>
+          </article>
+          <article class="fb-stat-card fb-stat-card-accent">
+            <span class="fb-stat-icon" aria-hidden="true">02</span>
+            <strong>Too much. Too far.</strong>
+            <h3>A coordination gap</h3>
+            <p>Surplus is local and time-sensitive. Finding a nearby organization with the right capacity can be hard.</p>
+            <span class="fb-stat-source">The opportunity for a better connection</span>
+          </article>
+          <article class="fb-stat-card">
+            <span class="fb-stat-icon" aria-hidden="true">03</span>
+            <strong>Too many neighbors</strong>
+            <h3>still need reliable meals</h3>
+            <p>Food recovery can help make more of the food already available reach community tables.</p>
+            <a href="https://www.fao.org/platform-food-loss-waste/en/" target="_blank" rel="noopener noreferrer">FAO food loss and waste <span aria-hidden="true">-&gt;</span></a>
+          </article>
+        </div>
+        <p class="fb-source-note">Source: UNEP, Food Waste Index Report 2024 (global estimate for 2022).</p>
+      </div>
+    </section>
+
+    <section id="solution" class="fb-solution-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 fb-solution-grid">
+        <div class="fb-solution-art" aria-hidden="true">
+          <div class="fb-solution-circle"></div>
+          <div class="fb-food-card fb-food-card-one"><span>Fresh produce</span><i></i><i></i><i></i></div>
+          <div class="fb-food-card fb-food-card-two"><span>Community kitchen</span><b>+</b></div>
+          <div class="fb-route-line"></div>
+          <div class="fb-route-node fb-route-node-one"></div>
+          <div class="fb-route-node fb-route-node-two"></div>
+        </div>
+        <div class="fb-solution-copy">
+          <p class="fb-section-kicker">One local network</p>
+          <h2>Make sharing the easiest next step.</h2>
+          <p>Food donors can publish available surplus. Approved community kitchens can request it, and volunteers can coordinate an accepted delivery.</p>
+          <ul class="fb-check-list">
+            <li><span>01</span> A simple way to describe available surplus</li>
+            <li><span>02</span> A local match based on need and capacity</li>
+            <li><span>03</span> A thoughtful, safety-first handoff</li>
+          </ul>
+          <a href="#get-involved" class="fb-text-link">Choose how you want to take part <span aria-hidden="true">-&gt;</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="py-16 lg:py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="fb-section-heading">
+          <p class="fb-section-kicker">How FoodBridge works</p>
+          <h2>From extra to shared, in three steps.</h2>
+          <p>Each step is coordinated by an account approved for its role.</p>
+        </div>
+        <div class="fb-steps-grid">
+          <article class="fb-step-card">
+            <span class="fb-step-number">01</span>
+            <div class="fb-step-icon" aria-hidden="true">+</div>
+            <h3>A kitchen shares</h3>
+            <p>A donor posts food details, quantity, pickup deadline, and area. Contact details remain private until a request is accepted.</p>
+            <span class="fb-step-tag">For food donors</span>
+          </article>
+          <article class="fb-step-card">
+            <span class="fb-step-number">02</span>
+            <div class="fb-step-icon" aria-hidden="true">↔</div>
+            <h3>A community connects</h3>
+            <p>An approved community kitchen reviews available listings and sends a request to the donor.</p>
+            <span class="fb-step-tag">For community partners</span>
+          </article>
+          <article class="fb-step-card">
+            <span class="fb-step-number">03</span>
+            <div class="fb-step-icon" aria-hidden="true">✓</div>
+            <h3>Good food gets there</h3>
+            <p>The donor accepts a request, then an approved volunteer can claim the delivery and coordinate the handoff.</p>
+            <span class="fb-step-tag">A better handoff</span>
+          </article>
+        </div>
+        <p class="fb-handoff-note">FoodBridge coordinates requests and handoffs. Donors remain responsible for food safety and volunteers confirm pickup and delivery directly.</p>
+      </div>
+    </section>
+
+    <section id="features" class="fb-features-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="fb-section-heading">
+          <p class="fb-section-kicker">Designed for real people</p>
+          <h2>Small details. A more thoughtful handoff.</h2>
+          <p>Keep the information people need for a clear, safe handoff together.</p>
+        </div>
+        <div class="fb-features-grid">
+          <article class="fb-feature-card"><span class="fb-feature-icon" aria-hidden="true">01</span><h3>Clear food details</h3><p>Share food type, quantity, timing, and handling details in one easy-to-understand place.</p></article>
+          <article class="fb-feature-card"><span class="fb-feature-icon" aria-hidden="true">02</span><h3>Local connections</h3><p>Approved community kitchens can browse current Gurugram listings and request food.</p></article>
+          <article class="fb-feature-card"><span class="fb-feature-icon" aria-hidden="true">03</span><h3>Safety in focus</h3><p>Put practical food-safety guidance and a careful human handoff before convenience.</p></article>
+          <article class="fb-feature-card"><span class="fb-feature-icon" aria-hidden="true">04</span><h3>Private handoff details</h3><p>Pickup address and donor phone are shared only after a donor accepts a request.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="get-involved" class="fb-join-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="fb-join-heading">
+          <p class="fb-section-kicker">Better together</p>
+          <h2>There is a place for everyone at the table.</h2>
+          <p>Create an account and request the role that matches how you will participate. A FoodBridge administrator reviews new accounts before operational access is enabled.</p>
+        </div>
+        <div class="fb-join-grid">
+          <article class="fb-join-card"><span class="fb-join-number">01 / DONOR</span><h3>Share surplus food</h3><p>Post food available for a nearby community kitchen to request.</p><a href="share-food.html">Open donor workspace <span aria-hidden="true">-&gt;</span></a></article>
+          <article class="fb-join-card"><span class="fb-join-number">02 / COMMUNITY KITCHEN</span><h3>Find available food</h3><p>Browse current listings and send a request to the donor.</p><a href="find-food.html">Browse food listings <span aria-hidden="true">-&gt;</span></a></article>
+          <article class="fb-join-card"><span class="fb-join-number">03 / VOLUNTEER</span><h3>Help with a delivery</h3><p>Claim an accepted delivery task and coordinate the handoff.</p><a href="volunteer.html">Open volunteer workspace <span aria-hidden="true">-&gt;</span></a></article>
+        </div>
+        <p class="fb-launch-note">New accounts begin in review. Food-sharing tools become available after email verification and role approval.</p>
+      </div>
+    </section>
+
+    <section id="faq" class="py-16 lg:py-20 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="fb-section-heading">
+          <p class="fb-section-kicker">Good to know</p>
+          <h2>Questions, answered.</h2>
+        </div>
+        <div class="space-y-3">
+          <article class="faq-item active fb-faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="true"><span>Can I donate food or register my organization today?</span><i data-lucide="chevron-down" class="faq-chevron w-4 h-4"></i></button>
+            <div class="faq-content"><p>Create an account and request a donor or community-kitchen role. Tools unlock after your email is verified and your account is approved.</p></div>
+          </article>
+          <article class="faq-item fb-faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="false"><span>How does FoodBridge help reduce food waste?</span><i data-lucide="chevron-down" class="faq-chevron w-4 h-4"></i></button>
+            <div class="faq-content"><p>Donors post surplus, approved community kitchens request it, and approved volunteers can claim delivery tasks after the donor accepts a request.</p></div>
+          </article>
+          <article class="faq-item fb-faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="false"><span>How do I get access to the donor, kitchen, or volunteer tools?</span><i data-lucide="chevron-down" class="faq-chevron w-4 h-4"></i></button>
+            <div class="faq-content"><p>Create an account and request a role. A FoodBridge administrator reviews the account before enabling tools for that role.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fb-footer">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="fb-footer-main">
+        <a href="#home" class="flex items-center gap-3" aria-label="FoodBridge home"><span class="fb-brand-mark" aria-hidden="true">F</span><span><strong class="text-xl font-bold text-white block">FoodBridge</strong><span class="text-xs text-slate-400">Good food, shared</span></span></a>
+        <p>Connecting food donors, community kitchens, and volunteers across Gurugram.</p>
+        <nav aria-label="Footer navigation"><a href="share-food.html">Share food</a><a href="find-food.html">Find food</a><a href="volunteer.html">Volunteer</a><a href="account.html">My account</a><a href="privacy.html">Privacy</a><a href="terms.html">Website notice</a></nav>
+      </div>
+      <div class="fb-footer-bottom"><span>&copy; 2026 FoodBridge · Gurugram, Haryana</span><span>Food safety and handoff decisions remain with participants.</span></div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script type="module" src="assets/js/account-nav.js"></script>
+</body>
+</html>

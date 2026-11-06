@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My account | FoodBridge</title>
+  <meta name="description" content="Manage your FoodBridge profile and account access.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/css/tailwind.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/icons.js"></script>
+</head>
+<body class="bg-white text-slate-800 antialiased font-sans">
+  <div class="fb-announcement">FOODBRIDGE · GURUGRAM COMMUNITY FOOD NETWORK</div>
+  <header class="fb-app-header">
+    <a href="index.html" class="flex items-center gap-3" aria-label="FoodBridge home">
+      <span class="fb-brand-mark" aria-hidden="true">F</span>
+      <strong class="text-xl font-bold tracking-tight text-slate-900">FoodBridge</strong>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="share-food.html">Share food</a>
+      <a href="find-food.html">Find food</a>
+      <a href="volunteer.html">Volunteer</a>
+    </nav>
+    <div id="desktop-account-nav" class="fb-account-nav"><a class="btn-secondary" href="login.html">Log in</a></div>
+  </header>
+  <main class="fb-app-main">
+    <a href="index.html" class="fb-app-back">&larr; Home</a>
+    <header class="fb-app-title">
+      <p class="fb-section-kicker">Your FoodBridge account</p>
+      <h1>My account</h1>
+      <p>Manage your profile and check your access to FoodBridge tools.</p>
+    </header>
+    <p id="page-status" class="fb-page-status" role="status">Checking your account...</p>
+    <section id="page-content" class="fb-app-card" hidden>
+      <div id="account-status" class="fb-account-status"></div>
+      <form id="profile-form" class="fb-app-form">
+        <label for="profile-name">Your name</label>
+        <input id="profile-name" type="text" minlength="2" maxlength="80" required>
+        <label for="profile-email">Email address</label>
+        <input id="profile-email" type="email" readonly>
+        <label for="profile-role">Requested role</label>
+        <input id="profile-role" type="text" readonly>
+        <button id="save-profile" class="btn-primary" type="submit">Save name</button>
+      </form>
+      <p id="profile-message" class="fb-page-status" role="status" hidden></p>
+      <nav class="fb-account-actions" aria-label="FoodBridge workspaces">
+        <a href="share-food.html">Donor workspace</a>
+        <a href="find-food.html">Community kitchen workspace</a>
+        <a href="volunteer.html">Volunteer workspace</a>
+      </nav>
+    </section>
+  </main>
+  <footer class="fb-login-footer"><span>&copy; 2026 FoodBridge · Gurugram, Haryana</span><a href="privacy.html">Privacy notice</a></footer>
+  <script type="module" src="assets/js/account-nav.js"></script>
+  <script type="module" src="assets/js/account.js"></script>
+</body>
+</html>
