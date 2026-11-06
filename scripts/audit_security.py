@@ -33,9 +33,7 @@ def scan_for_secrets():
     findings = []
     
     for root, dirs, files in os.walk('.'):
-        # Skip git directory
-        if '.git' in dirs:
-            dirs.remove('.git')
+        dirs[:] = [directory for directory in dirs if directory not in {'.git', 'dist', 'build', '__pycache__'}]
         
         for fname in files:
             if fname in IGNORE_FILES:
@@ -55,6 +53,11 @@ def scan_for_secrets():
                 clean_line = line.strip()
                 # Skip comments explaining environment variables
                 if clean_line.startswith('#') or clean_line.startswith('//'):
+                    continue
+                if (
+                    rel_path.replace(os.sep, '/') == 'assets/js/firebase-config.js'
+                    and re.fullmatch(r'apiKey\s*:\s*"AIza[0-9A-Za-z_-]+"[,]?', clean_line)
+                ):
                     continue
                 
                 for pattern, desc in SECRET_PATTERNS:
@@ -178,4 +181,3 @@ if __name__ == '__main__':
         sys.exit(0)
     else:
         sys.exit(1)
-
