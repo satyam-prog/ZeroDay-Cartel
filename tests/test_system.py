@@ -311,6 +311,11 @@ def test_render_public_bundle():
     ):
         assert required_policy in firestore_rules, f"Firestore policy is missing {required_policy}."
     assert 'email_verified' not in firestore_rules, "Firestore access must not require email verification."
+    with open('dist/assets/js/account-nav.js', 'r', encoding='utf-8') as f:
+        account_nav_script = f.read()
+    assert 'fb-account-avatar' in account_nav_script, "Signed-in navigation must render a circular account avatar."
+    assert 'renderSignedIn(user, null);' in account_nav_script, "The signed-in avatar must render before loading the Firestore profile."
+    assert 'image.addEventListener("error"' in account_nav_script, "Broken account photos must fall back to avatar initials."
     with open('assets/js/find-food.js', 'r', encoding='utf-8') as f:
         kitchen_script = f.read()
     assert 'foodName: item.foodName' in kitchen_script, "Kitchen requests must retain a listing name for history."

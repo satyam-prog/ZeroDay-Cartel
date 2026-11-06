@@ -1298,20 +1298,55 @@ input[type="range"].calc-range::-moz-range-thumb {
 }
 
 .fb-account-summary {
-  display: inline-flex;
-  max-width: 13rem;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.65rem 0.85rem;
+  display: grid;
+  width: 2.9rem;
+  height: 2.9rem;
+  place-items: center;
+  padding: 0.15rem;
   border: 1px solid #d5dfd4;
+  border-radius: 50%;
   color: #174b35;
   background: #fff;
   cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 700;
+  list-style: none;
+}
+
+.fb-account-summary::-webkit-details-marker {
+  display: none;
+}
+
+.fb-account-avatar {
+  position: relative;
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: 0 0 auto;
+  place-items: center;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  border-radius: 50%;
+  color: #fff;
+  background: #176b4a;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.fb-account-avatar-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.fb-account-summary:focus-visible {
+  outline: 3px solid #a6c76a;
+  outline-offset: 3px;
+}
+
+.fb-account-summary:hover {
+  border-color: #176b4a;
 }
 
 .fb-account-dropdown {

@@ -11,7 +11,7 @@ FoodBridge is a Gurugram food-sharing pilot with public account registration, ro
 5. Add the composite index defined in `firestore.indexes.json`. The Firebase Console will also show a link to create it if the first kitchen listing query needs it.
 6. Copy the Web app's `apiKey`, `authDomain`, `projectId`, and `appId` into `assets/js/firebase-config.js`. These browser configuration values are public; never put an Admin SDK key or service-account credentials in this file.
 7. Under **Authentication > Settings > Authorized domains**, add the Render `onrender.com` hostname and any custom domain. Add `localhost` only for local testing.
-8. Configure password policy and email templates in Firebase. Restrict the Firebase web API key to the site's HTTP referrers and required APIs where supported.
+8. Configure password policy and email templates in Firebase. Restrict the Firebase web API key to the site's HTTP referrers and required APIs where supported. The web app config in `assets/js/firebase-config.js` is public client configuration, not a secret or a Render credential. Never add a Firebase Admin SDK key or service-account JSON to the static site or Render environment.
 
 New users register from `login.html` and receive a pending role without an email verification step. An administrator must review and approve each role in Firestore by changing the user's `profiles/{uid}` fields `role` and `approvalStatus` to the approved role (`donor`, `kitchen`, or `volunteer`) and `approved`. Do not change `requestedRole` or allow users to approve themselves. There is no admin dashboard in this pilot.
 
@@ -19,16 +19,21 @@ New users register from `login.html` and receive a pending role without an email
 
 The included [render.yaml](./render.yaml) defines a Render Static Site. `scripts/build_static_site.py` copies only the allowlisted public pages and assets into `dist/`; it does not publish the separate API, database, test fixtures, or certificates.
 
-1. Push the project to a Git provider connected to Render. If the repository root is the `OS code` folder, keep `rootDir: .`; otherwise set `rootDir` in `render.yaml` to the project subdirectory.
-2. In Render, choose **New > Blueprint**, connect the repository, and select `render.yaml`. Review and create `foodbridge-public`. The build command is `python3 scripts/build_static_site.py` and the publish directory is `dist`.
-3. In the static site's **Headers** settings, add `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy: geolocation=(), microphone=(), camera=()`. Set this Content Security Policy:
+1. Push the project to GitHub and sign in to Render using the GitHub account that can access the repository. Firebase is used by the app for user authentication and Firestore data; it does not sign you in to Render.
+2. In Render, choose **New + > Static Site**, connect `satyam-prog/ZeroDay-Cartel`, and select the `main` branch.
+3. Use these settings:
+   - Root Directory: leave blank (the repository root contains `render.yaml` and the build script).
+   - Build Command: `python3 scripts/build_static_site.py`
+   - Publish Directory: `dist`
+4. Create the static site. Render builds and publishes the files in `dist`; subsequent pushes to `main` trigger a redeploy.
+5. In the static site's **Headers** settings, add `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy: geolocation=(), microphone=(), camera=()`. Set this Content Security Policy:
 
    ```text
    default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebaseinstallations.googleapis.com https://firestore.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
    ```
 
-4. After the first deploy, add the exact Render hostname to Firebase **Authorized domains**. For a custom domain, add it in Render **Settings > Custom Domains**, configure DNS as Render instructs, and authorize that domain in Firebase. The repository's `CNAME` file does not configure Render DNS.
-5. Test using separate donor, kitchen, and volunteer accounts. Verify registration, pending-role denial, administrator role approval, posting a listing, requesting and accepting it, claiming/completing a delivery, password reset, refresh persistence, and sign-out. Use disposable test data and remove it afterward.
+6. After the first deploy, add the exact Render hostname (for example, `foodbridge-public.onrender.com`) to Firebase **Authentication > Settings > Authorized domains**. If the hostname differs, use the actual one Render assigned. For a custom domain, add it in Render **Settings > Custom Domains**, configure DNS as Render instructs, and authorize that domain in Firebase. The repository's `CNAME` file does not configure Render DNS.
+7. Test using separate donor, kitchen, and volunteer accounts. Verify registration, pending-role denial, administrator role approval, posting a listing, requesting and accepting it, claiming/completing a delivery, password reset, refresh persistence, and sign-out. Use disposable test data and remove it afterward.
 
 Tailwind is compiled into `assets/css/tailwind.css`. The app loads the pinned Firebase JavaScript SDK from `www.gstatic.com`; Render serves the static site over TLS, while Firebase rules protect Firestore data. Static HTML is public, so do not put sensitive data in the site files. The app does not independently verify food safety, user organizations, or successful handoffs. Arrange real-world support, incident handling, data retention/deletion, and India-specific food-safety and privacy review before inviting the public.
 

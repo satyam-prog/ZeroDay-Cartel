@@ -35,7 +35,34 @@ function renderSignedIn(user, profile) {
   slots.forEach(slot => {
     slot.replaceChildren();
     const details = makeElement("details", "fb-account-menu");
-    const summary = makeElement("summary", "fb-account-summary", profile?.displayName || user.email || "My account");
+    const displayName = profile?.displayName || user.displayName || user.email || "My account";
+    const initials = displayName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0])
+      .join("")
+      .toUpperCase() || "U";
+    const summary = makeElement("summary", "fb-account-summary");
+    summary.setAttribute("aria-label", `Open account menu for ${displayName}`);
+    summary.title = displayName;
+    const avatar = makeElement("span", "fb-account-avatar", initials);
+    avatar.setAttribute("aria-hidden", "true");
+    if (user.photoURL) {
+      try {
+        const photoUrl = new URL(user.photoURL);
+        if (photoUrl.protocol === "https:") {
+          const image = makeElement("img", "fb-account-avatar-image");
+          image.src = photoUrl.href;
+          image.alt = "";
+          image.addEventListener("error", () => image.remove(), { once: true });
+          avatar.append(image);
+        }
+      } catch {
+        console.error("Could not display the signed-in user's profile photo URL.");
+      }
+    }
+    summary.append(avatar);
     const menu = makeElement("div", "fb-account-dropdown");
     const accountLink = makeElement("a", "", "My account");
     accountLink.href = "account.html";
@@ -73,12 +100,14 @@ if (!firebaseConfigured || !auth || !db) {
         return;
       }
 
+      renderSignedIn(user, null);
       try {
         const profileSnapshot = await getDoc(doc(db, "profiles", user.uid));
-        renderSignedIn(user, profileSnapshot.exists() ? profileSnapshot.data() : null);
+        if (auth.currentUser?.uid === user.uid) {
+          renderSignedIn(user, profileSnapshot.exists() ? profileSnapshot.data() : null);
+        }
       } catch (error) {
         console.error("Could not load the signed-in FoodBridge profile.", error);
-        renderSignedIn(user, null);
       }
     }, error => {
       console.error("Could not observe Firebase Authentication state.", error);
